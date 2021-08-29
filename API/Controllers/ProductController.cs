@@ -34,6 +34,7 @@ namespace API.Controllers
                 return Ok(Products);
             }
         }
+
         [HttpGet("/products/{id}")]
         public ActionResult<ProductModel> GetProductById(int id)
         {
@@ -61,31 +62,58 @@ namespace API.Controllers
                 }
                 connection.Close();
                 return Ok(Products);
-
-
-
-
-
-
-
-
             }
         }
 
-        [HttpPost]
+        [HttpPost("productadd")]
         public ActionResult<ProductModel> AddProduct(ProductModel productModel)
         {
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
+                SqlCommand command = new SqlCommand(
+                    "INSERT INTO Products(Name,Picture,PictureName,Price,CategoryId,Active) " +
+                    "VALUES('" + productModel.Name 
+                    + "','" + productModel.Picture 
+                    + "','" + productModel.PictureName 
+                    + "','" + productModel.Price 
+                    + "','" + productModel.CategoryId 
+                    + "','" + productModel.Active + "')");
+
+                command.Connection = connection;
+                command.ExecuteReader();
+                connection.Close();
 
             }
 
-            return new ProductModel
-            {
+            return Ok(productModel);
+        }
 
-            };
+        [HttpPost("productupdate/{id}")]
+        public ActionResult<ProductModel> UpdateProduct(int id, ProductModel productModel)
+        {
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                SqlCommand command = new SqlCommand(
+                    "UPDATE Products " +
+                    "SET Name='"+ productModel.Name 
+                        +"', Picture='"+ productModel.Picture 
+                        +"', PictureName='"+ productModel.PictureName 
+                        +"', Price='"+ productModel.Price 
+                        +"', CategoryId='"+ productModel.CategoryId
+                        +"', Active='"+ productModel.Active 
+                        +"' WHERE Id="+id);
+
+                command.Connection = connection;
+                command.ExecuteReader();
+                connection.Close();
+
+            }
+
+            return Ok(productModel);
         }
 
 
